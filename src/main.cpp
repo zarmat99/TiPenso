@@ -6,7 +6,18 @@
 #include <BLECharacteristic.h>
 #include <BLEService.h>
 
+#define DEBUG 1  
+
+#if DEBUG
+  #define DEBUG_PRINT(x) Serial.print(x)
+  #define DEBUG_PRINTLN(x) Serial.println(x)
+#else
+  #define DEBUG_PRINT(x) 
+  #define DEBUG_PRINTLN(x) 
+#endif
+
 #define BUTTON_PIN          0 
+#define LED_PIN             2
 #define SERVICE_UUID        "12345678-1234-5678-1234-56789abcdef0"
 #define BUTTON_UUID         "f3d9e507-5fbe-48c6-9f07-0173f5fae9b0"
 #define RECEIVE_UUID        "d0b39442-8be6-4d15-9610-054c3efc1c4f"
@@ -23,13 +34,18 @@ class MyServerCallbacks : public BLEServerCallbacks
     void onConnect(BLEServer* pServer) 
     {
         deviceConnected = true;
-        Serial.println("Device connected!");
+        DEBUG_PRINTLN("Device connected!");
+
+        const char *initialMsg = "0";
+        pButtonCharacteristic->setValue((uint8_t *)initialMsg, strlen(initialMsg));
+        pButtonCharacteristic->notify();
+        DEBUG_PRINTLN("Initial state -> value 0 sent!");
     }
 
     void onDisconnect(BLEServer* pServer) 
     {
         deviceConnected = false;
-        Serial.println("Device disconnected!");
+        DEBUG_PRINTLN("Device disconnected!");
         pServer->getAdvertising()->start();  // Restart advertising for new connections
     }
 };
@@ -42,22 +58,22 @@ class MyCallbacks : public BLECharacteristicCallbacks
         std::string value = pCharacteristic->getValue();
         if (value.length() > 0) 
         {
-            Serial.print("Message received: ");
-            Serial.println(value.c_str());
+            DEBUG_PRINT("Message received: ");
+            DEBUG_PRINTLN(value.c_str());
 
-            if (value == "TURN_ON") 
+            if (value == "1") 
             {
-                Serial.println("Command: Turn on LED!");
-                
+                DEBUG_PRINTLN("Command: Turn on LED!");
+                digitalWrite(LED_PIN, HIGH);
             } 
-            else if (value == "TURN_OFF") 
+            else if (value == "0") 
             {
-                Serial.println("Command: Turn off LED!");
-                
+                DEBUG_PRINTLN("Command: Turn off LED!");
+                digitalWrite(LED_PIN, LOW);
             } 
             else 
             {
-                Serial.println("Unknown command!");
+                DEBUG_PRINTLN("Unknown command!");
             }
         }
     }
@@ -66,8 +82,12 @@ class MyCallbacks : public BLECharacteristicCallbacks
 void setup() 
 {
     Serial.begin(115200);
+
+    // Set pin modes
     pinMode(BUTTON_PIN, INPUT);
-    Serial.println("START");
+    pinMode(LED_PIN, OUTPUT);
+    
+    DEBUG_PRINTLN("Start");
 
     // Initialize BLE device
     BLEDevice::init("Ti Penso");
@@ -83,12 +103,12 @@ void setup()
     pButtonCharacteristic = new BLECharacteristic(BUTTON_UUID, BLECharacteristic::PROPERTY_NOTIFY); 
     if(pButtonCharacteristic == NULL)
     {
-        Serial.println("ButtonCharacteristic NULL");
+        DEBUG_PRINTLN("ButtonCharacteristic NULL");
     }
     pReceiveCharacteristic = new BLECharacteristic(RECEIVE_UUID, BLECharacteristic::PROPERTY_WRITE);
     if(pReceiveCharacteristic == NULL)
     {
-        Serial.println("ReceiveCharacteristic NULL");
+        DEBUG_PRINTLN("ReceiveCharacteristic NULL");
     }
 
     BLEDescriptor *pCCCD = new BLE2902();
@@ -106,7 +126,7 @@ void setup()
     pAdvertising->addServiceUUID(SERVICE_UUID);
     pAdvertising->start();
 
-    Serial.println("BLE ready, waiting for connections...");
+    DEBUG_PRINTLN("BLE ready, waiting for connections...");
 }
 
 void loop() 
@@ -122,7 +142,7 @@ void loop()
                 const char *msg = "1";
                 pButtonCharacteristic->setValue((uint8_t *)msg, strlen(msg));
                 pButtonCharacteristic->notify(); 
-                Serial.println("Button pressed -> value 1 sent!");
+                DEBUG_PRINTLN("Button pressed -> value 1 sent!");
             }
         } 
         else 
@@ -134,7 +154,7 @@ void loop()
                 const char *msg = "0";
                 pButtonCharacteristic->setValue((uint8_t *)msg, strlen(msg));
                 pButtonCharacteristic->notify(); 
-                Serial.println("Button released -> value 0 sent!");
+                DEBUG_PRINTLN("Button released -> value 0 sent!");
             }
         }
     }
