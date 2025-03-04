@@ -3,21 +3,26 @@ from bleak import BleakClient, BleakScanner
 import websockets
 import json
 import sys
+import os
 
-# Costanti BLE
-BUTTON_CHAR_UUID = "f3d9e507-5fbe-48c6-9f07-0173f5fae9b0"
-LED_CHAR_UUID = "d0b39442-8be6-4d15-9610-054c3efc1c4f"
-
-# Configurazione Server
-SERVER_URL = "ws://localhost:8080/ws"
-PAIR_CODE = "12345"
+# Add the parent directory to the Python path to import constants
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from core.constants import (
+    BUTTON_CHAR_UUID,
+    LED_CHAR_UUID,
+    LOCAL_SERVER_URL,
+    REMOTE_SERVER_URL,
+    PAIR_CODE
+)
 
 class BLEBridge:
-    def __init__(self, device_number):
+    def __init__(self, device_number, version="local"):
         self.ble_client = None
         self.ws_client = None
         self.device_address = None
         self.device_number = device_number
+        self.version = version
+        self.server_url = REMOTE_SERVER_URL if version == "remote" else LOCAL_SERVER_URL
         
     async def scan_for_device(self):
         print(f"Device {self.device_number}: Scanning...")
@@ -64,7 +69,7 @@ class BLEBridge:
             
     async def connect_server(self):
         try:
-            self.ws_client = await websockets.connect(SERVER_URL)
+            self.ws_client = await websockets.connect(self.server_url)
             await self.ws_client.send(json.dumps({
                 "type": "register",
                 "pair_code": PAIR_CODE
@@ -119,14 +124,19 @@ class BLEBridge:
                 await self.ws_client.close()
 
 async def main():
-    # Prendi il numero del device da riga di comando o usa 1 come default
+    # Prendi il numero del device e la versione da riga di comando
     device_number = int(sys.argv[1]) if len(sys.argv) > 1 else 1
+    version = sys.argv[2] if len(sys.argv) > 2 else "local"
     
     if device_number not in [1, 2]:
         print("Error: Device number must be 1 or 2")
         return
         
-    bridge = BLEBridge(device_number)
+    if version not in ["local", "remote"]:
+        print("Error: Version must be 'local' or 'remote'")
+        return
+        
+    bridge = BLEBridge(device_number, version)
     await bridge.run()
 
 if __name__ == "__main__":
