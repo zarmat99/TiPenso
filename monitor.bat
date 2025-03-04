@@ -1,3 +1,0 @@
-@echo off 
-echo Avvio del monitor seriale...
-arduino-cli monitor --port COM15 --config 115200

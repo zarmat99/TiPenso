@@ -81,6 +81,7 @@ class MyCallbacks : public BLECharacteristicCallbacks
 
 void setup() 
 {
+    setCpuFrequencyMhz(80);
     Serial.begin(115200);
 
     // Set pin modes
@@ -94,36 +95,47 @@ void setup()
 
     // Create BLE server
     BLEServer *pServer = BLEDevice::createServer();
+    if (!pServer) {
+        DEBUG_PRINTLN("Failed to create BLE server!");
+        return;
+    }
     pServer->setCallbacks(new MyServerCallbacks());
 
     // Create Service
     BLEService *pService = pServer->createService(SERVICE_UUID);
+    if (!pService) {
+        DEBUG_PRINTLN("Failed to create BLE service!");
+        return;
+    }
 
     // Create characteristics
     pButtonCharacteristic = new BLECharacteristic(BUTTON_UUID, BLECharacteristic::PROPERTY_NOTIFY); 
-    if(pButtonCharacteristic == NULL)
-    {
+    if (!pButtonCharacteristic) {
         DEBUG_PRINTLN("ButtonCharacteristic NULL");
+        return;
     }
+    
     pReceiveCharacteristic = new BLECharacteristic(RECEIVE_UUID, BLECharacteristic::PROPERTY_WRITE);
-    if(pReceiveCharacteristic == NULL)
-    {
+    if (!pReceiveCharacteristic) {
         DEBUG_PRINTLN("ReceiveCharacteristic NULL");
+        return;
     }
 
     BLEDescriptor *pCCCD = new BLE2902();
     pButtonCharacteristic->addDescriptor(pCCCD);
 
     pService->addCharacteristic(pReceiveCharacteristic);
+    
     pService->addCharacteristic(pButtonCharacteristic);
     
     pReceiveCharacteristic->setCallbacks(new MyCallbacks());
 
     // Start BLE Service
     pService->start();
-    
+
     BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
     pAdvertising->addServiceUUID(SERVICE_UUID);
+    
     pAdvertising->start();
 
     DEBUG_PRINTLN("BLE ready, waiting for connections...");
@@ -159,5 +171,6 @@ void loop()
         }
     }
 
-    delay(100);
+    delay(100); //87 mA
+    
 }

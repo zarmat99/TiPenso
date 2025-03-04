@@ -1,3 +1,0 @@
-@echo off
-echo Compilazione in corso...
-pio run
