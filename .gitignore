@@ -1,31 +1,107 @@
-# PlatformIO
-**/.pio/
-**/.pioenvs/
-**/.piolibdeps/
-**/.clang_complete
-**/.gcc-flags.json
+# System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE - Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+atlassian-ide-plugin.xml
+
+# IDE - VS Code
+.vscode/
+*.code-workspace
+
+# IDE - PlatformIO
+.pio/
+.vscode/.browse.c_cpp.db*
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/ipch
+
+# Android - Build
+android/app/build/
+android/build/
+android/.gradle/
+android/gradlew
+android/gradlew.bat
+android/gradle/wrapper/gradle-wrapper.jar
+android/gradle/wrapper/gradle-wrapper.properties
+android/.gradle/
+android/local.properties
+android/captures/
+android/externalNativeBuild/
+android/.externalNativeBuild/
+android/app/release/
+
+# Android - Generated
+android/app/src/main/assets/
+android/app/src/main/jniLibs/
+android/app/src/main/res/raw/
+android/app/src/main/res/drawable-*/
+android/app/src/main/res/values-*/
+android/app/src/main/res/values-night-*/
+android/app/src/main/res/values-v*/
+android/app/src/main/res/values-x*/
+android/app/src/main/res/values-xx*/
+android/app/src/main/res/values-xxx*/
+
+# ESP32 - Build
+esp32/build/
+esp32/.pio/
+esp32/.pioenvs/
+esp32/.piolibdeps/
+esp32/.piolib/
+esp32/.clang_complete
+esp32/.gcc-flags.json
+
+# ESP32 - Debug
+esp32/.vscode/.browse.c_cpp.db*
+esp32/.vscode/c_cpp_properties.json
+esp32/.vscode/launch.json
+esp32/.vscode/ipch
 
 # Python
-**/__pycache__/
-**/*.py[cod]
-**/*$py.class
-**/.env
-**/.venv
-**/env/
-**/venv/
-**/ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.env
+.venv
+venv/
+ENV/
 
-# VS Code
-**/.vscode/
-**/*.code-workspace
-**/.history/
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# IDE
-**/.idea/
-**/*.swp
-**/*.swo
-**/*~
-
-# OS
-**/.DS_Store
-**/Thumbs.db
+# Temporary files
+*.swp
+*.swo
+*~
+*.bak
+*.tmp
+*.temp

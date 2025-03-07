@@ -1,24 +1,24 @@
 # Ti Penso PlatformIO Project
 
-Questo documento descrive la parte embedded del progetto Ti Penso, implementata su ESP32-C3 utilizzando PlatformIO.
+This document describes the embedded part of the Ti Penso project, implemented on ESP32-C3 using PlatformIO.
 
-## Struttura del Progetto
+## Project Structure
 
 ```
 Embedded/
-├── src/               # Codice sorgente
-│   └── main.cpp      # File principale
+├── src/               # Source code
+│   └── main.cpp      # Main file
 ├── include/          # Header files
-├── lib/             # Librerie personalizzate
-├── test/            # Test unitari
-├── platformio.ini   # Configurazione PlatformIO
-├── esp32.py         # Script di deployment
-└── esp32.bat        # Batch file per il deployment
+├── lib/             # Custom libraries
+├── test/            # Unit tests
+├── platformio.ini   # PlatformIO configuration
+├── esp32.py         # Deployment script
+└── esp32.bat        # Batch file for deployment
 ```
 
-## Configurazione PlatformIO
+## PlatformIO Configuration
 
-Il progetto è configurato per ESP32-C3 con le seguenti impostazioni in `platformio.ini`:
+The project is configured for ESP32-C3 with the following settings in `platformio.ini`:
 
 ```ini
 [env:esp32-c3-devkitm-1]
@@ -32,75 +32,75 @@ board_build.f_flash = 40000000L
 board_build.mcu = esp32c3
 ```
 
-### Caratteristiche Principali
+### Main Features
 
 - **CPU**: ESP32-C3 (RISC-V)
-- **Frequenza**: 80MHz
+- **Frequency**: 80MHz
 - **Flash**: 4MB
 - **RAM**: 400KB
-- **USB**: Supporto CDC
+- **USB**: CDC support
 - **BLE**: Bluetooth Low Energy 5.0
 
-## Funzionalità BLE
+## BLE Features
 
-### Servizi e Caratteristiche
+### Services and Characteristics
 
-1. **Servizio Principale**
+1. **Main Service**
    - UUID: `12345678-1234-5678-1234-56789abcdef0`
 
-2. **Caratteristiche**
-   - **Pulsante** (Notify)
+2. **Characteristics**
+   - **Button** (Notify)
      - UUID: `f3d9e507-5fbe-48c6-9f07-0173f5fae9b0`
-     - Invia lo stato del pulsante (0/1)
+     - Sends button state (0/1)
    
    - **LED** (Write)
      - UUID: `d0b39442-8be6-4d15-9610-054c3efc1c4f`
-     - Riceve comandi per il LED (0/1)
+     - Receives LED commands (0/1)
 
-### Comportamento
+### Behavior
 
-1. **Connessione**
-   - Nome dispositivo: "Ti Penso"
-   - Advertising automatico
-   - Riconnessione automatica
+1. **Connection**
+   - Device name: "Ti Penso"
+   - Automatic advertising
+   - Automatic reconnection
 
-2. **Pulsante**
-   - Notifica quando premuto (1)
-   - Notifica quando rilasciato (0)
-   - Debounce integrato
+2. **Button**
+   - Notifies when pressed (1)
+   - Notifies when released (0)
+   - Integrated debounce
 
 3. **LED**
-   - Acceso con comando "1"
-   - Spento con comando "0"
+   - Turns on with command "1"
+   - Turns off with command "0"
 
 ## Pin Mapping
 
 - **BUTTON_PIN**: 0 (GPIO0)
 - **LED_PIN**: 2 (GPIO2)
 
-## Ottimizzazioni
+## Optimizations
 
-1. **Consumo Energetico**
-   - CPU a 80MHz
-   - Delay di 100ms nel loop principale
-   - Consumo stimato: ~87mA
+1. **Power Consumption**
+   - CPU at 80MHz
+   - 100ms delay in main loop
+   - Estimated consumption: ~87mA
 
 2. **Performance**
-   - BLE ottimizzato per bassa latenza
-   - Gestione efficiente delle notifiche
-   - Debounce hardware del pulsante
+   - BLE optimized for low latency
+   - Efficient notification handling
+   - Hardware button debounce
 
 ## Deployment
 
-### Requisiti
+### Requirements
 
-- PlatformIO installato
-- ESP32-C3 collegato via USB
-- Porta COM corretta configurata
+- PlatformIO installed
+- ESP32-C3 connected via USB
+- Correct COM port configured
 
-### Procedura
+### Procedure
 
-1. **Compilazione**
+1. **Compilation**
    ```bash
    pio run
    ```
@@ -115,33 +115,33 @@ board_build.mcu = esp32c3
    pio device monitor
    ```
 
-### Script di Deployment
+### Deployment Script
 
-Il progetto include uno script Python (`esp32.py`) per automatizzare il deployment:
+The project includes a Python script (`esp32.py`) to automate deployment:
 
 ```bash
-python esp32.py all COMx  # Sostituire COMx con la porta corretta
+python esp32.py all COMx  # Replace COMx with correct port
 ```
 
 ## Debug
 
-### Output Serial
+### Serial Output
 
-- Velocità: 115200 baud
-- Filtri: esp32_exception_decoder, default
-- Debug abilitato (DEBUG = 1)
+- Speed: 115200 baud
+- Filters: esp32_exception_decoder, default
+- Debug enabled (DEBUG = 1)
 
-### Messaggi di Debug
+### Debug Messages
 
-1. **Inizializzazione**
+1. **Initialization**
    - "Start"
    - "BLE ready, waiting for connections..."
 
-2. **Connessione**
+2. **Connection**
    - "Device connected!"
    - "Initial state -> value 0 sent!"
 
-3. **Pulsante**
+3. **Button**
    - "Button pressed -> value 1 sent!"
    - "Button released -> value 0 sent!"
 
@@ -151,24 +151,24 @@ python esp32.py all COMx  # Sostituire COMx con la porta corretta
 
 ## Troubleshooting
 
-1. **Dispositivo non rilevato**
-   - Verificare la connessione USB
-   - Controllare la porta COM nel Device Manager
-   - Provare un cavo USB diverso
+1. **Device not detected**
+   - Check USB connection
+   - Verify COM port in Device Manager
+   - Try a different USB cable
 
-2. **Upload fallito**
-   - Mettere la board in modalità download
-   - Verificare la porta COM corretta
-   - Controllare i driver USB
+2. **Upload failed**
+   - Put board in download mode
+   - Verify correct COM port
+   - Check USB drivers
 
-3. **BLE non funzionante**
-   - Verificare l'alimentazione
-   - Controllare le connessioni
-   - Riavviare il dispositivo
+3. **BLE not working**
+   - Check power supply
+   - Verify connections
+   - Restart device
 
-## Note di Sviluppo
+## Development Notes
 
-- Utilizza il framework Arduino per ESP32
-- Supporta il debug via USB CDC
-- Implementa un sistema di notifiche BLE efficiente
-- Gestisce gli errori in modo robusto 
+- Uses Arduino framework for ESP32
+- Supports USB CDC debugging
+- Implements efficient BLE notification system
+- Handles errors robustly 
